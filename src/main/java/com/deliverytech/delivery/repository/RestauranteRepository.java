@@ -1,6 +1,7 @@
 package com.deliverytech.delivery.repository;
 
 import com.deliverytech.delivery.model.Restaurante;
+import com.deliverytech.delivery.projection.RestauranteReportProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -26,4 +27,11 @@ public interface RestauranteRepository extends JpaRepository<Restaurante, Long> 
     
     @Query("SELECT r FROM Restaurante r WHERE r.ativo = true AND r.taxaEntrega <= :taxaMaxima ORDER BY r.taxaEntrega ASC")
     List<Restaurante> findRestaurantesComTaxaBaixa(@Param("taxaMaxima") BigDecimal taxaMaxima);
+    
+    @Query("SELECT r.id as id, r.nome as nome, r.categoria as categoria, r.taxaEntrega as taxaEntrega, " +
+           "r.tempoEntregaMin as tempoEntregaMin, r.ativo as ativo, r.dataCadastro as dataCadastro, " +
+           "COUNT(p.id) as totalPedidos, COALESCE(SUM(p.valorTotal), 0) as receitaTotal " +
+           "FROM Restaurante r LEFT JOIN Pedido p ON r.id = p.restaurante.id " +
+           "GROUP BY r.id, r.nome, r.categoria, r.taxaEntrega, r.tempoEntregaMin, r.ativo, r.dataCadastro")
+    List<RestauranteReportProjection> findRestaurantesComEstatisticas();
 }

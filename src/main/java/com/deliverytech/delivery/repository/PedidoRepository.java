@@ -2,6 +2,8 @@ package com.deliverytech.delivery.repository;
 
 import com.deliverytech.delivery.model.Pedido;
 import com.deliverytech.delivery.model.StatusPedido;
+import com.deliverytech.delivery.projection.PedidoReportProjection;
+import com.deliverytech.delivery.projection.VendasReportProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -34,4 +36,20 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     
     @Query("SELECT COUNT(p) FROM Pedido p WHERE p.status = :status")
     Long countByStatus(@Param("status") StatusPedido status);
+    
+    @Query("SELECT p.id as id, c.nome as clienteNome, r.nome as restauranteNome, " +
+           "p.status as status, p.dataPedido as dataPedido, p.valorTotal as valorTotal, " +
+           "p.enderecoEntrega as enderecoEntrega " +
+           "FROM Pedido p JOIN p.cliente c JOIN p.restaurante r " +
+           "ORDER BY p.dataPedido DESC")
+    List<PedidoReportProjection> findPedidosParaRelatorio();
+    
+    @Query("SELECT DATE(p.dataPedido) as dataPedido, COUNT(p.id) as totalPedidos, " +
+           "SUM(p.valorTotal) as receitaTotal, AVG(p.valorTotal) as ticketMedio, " +
+           "MAX(r.nome) as restauranteMaisVendido, MAX(r.categoria) as categoriaMaisVendida " +
+           "FROM Pedido p JOIN p.restaurante r " +
+           "WHERE p.dataPedido >= :dataInicio " +
+           "GROUP BY DATE(p.dataPedido) " +
+           "ORDER BY DATE(p.dataPedido) DESC")
+    List<VendasReportProjection> findRelatorioVendasPorPeriodo(@Param("dataInicio") LocalDateTime dataInicio);
 }
