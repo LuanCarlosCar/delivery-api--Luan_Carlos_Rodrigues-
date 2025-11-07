@@ -163,3 +163,72 @@ GROUP BY r.id, r.nome, r.categoria, r.taxaEntrega, r.tempoEntregaMin, r.ativo, r
 ---
 **Data de Análise:** 06/11/2025  
 **Status:** ✅ Implementação concluída com sucesso
+
+
+
+
+**Para rodar os testes obrigatorios**: ./mvnw test -Dtest=CenariosObrigatoriosTest
+
+**=== EXECUÇÃO COMPLETA DE TODOS OS CENÁRIOS ===**
+
+=== CENÁRIO 1: Busca de Cliente por Email ===
+
+
+clienteRepository.findByEmail("joao@email.com")
+Cliente encontrado: João Silva
+   Email: joao@email.com
+   Ativo: true
+   Data Cadastro: 2025-11-06T20:52:11.257712
+
+
+=== CENÁRIO 2: Produtos por Restaurante ===
+
+produtoRepository.findByRestauranteId(1L)
+ Produtos encontrados: 3
+   - Pizza Margherita (R$ 35.90)
+     Categoria: Pizza
+     Disponível: true
+   - Pizza Pepperoni (R$ 42.90)
+     Categoria: Pizza
+     Disponível: true
+   - Refrigerante 350ml (R$ 4.50)
+     Categoria: Bebida
+     Disponível: true
+
+=== CENÁRIO 3: Pedidos Recentes ===
+
+pedidoRepository.findTop10ByOrderByDataPedidoDesc()
+
+ Pedidos encontrados: 2
+   - Pedido #2
+     Cliente: Maria Santos
+     Restaurante: Burger House
+     Data: 2025-11-06T20:52:11.362516
+     Valor: R$ 41.80
+     Status: CONFIRMADO
+   - Pedido #1
+     Cliente: João Silva
+     Restaurante: Pizza Express
+     Data: 2025-11-06T20:52:11.347944
+     Valor: R$ 75.30
+     Status: PENDENTE
+
+
+=== CENÁRIO 4: Restaurantes por Taxa ===
+
+restauranteRepository.findByTaxaEntregaLessThanEqual(BigDecimal("5.00"))
+Restaurantes encontrados: 2
+   - Pizza Express
+     Categoria: Italiana
+     Taxa de Entrega: R$ 5.00
+     Tempo de Entrega: 30 min
+     Ativo: true
+   - Burger House
+     Categoria: Hamburguer
+     Taxa de Entrega: R$ 3.50
+     Tempo de Entrega: 25 min
+     Ativo: true
+
+
+
+
