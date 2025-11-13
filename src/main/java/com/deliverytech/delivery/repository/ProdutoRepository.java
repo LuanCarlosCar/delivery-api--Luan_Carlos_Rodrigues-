@@ -29,4 +29,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     
     @Query("SELECT p FROM Produto p JOIN p.restaurante r WHERE r.categoria = :categoria AND p.disponivel = true")
     List<Produto> findProdutosPorCategoriaRestaurante(@Param("categoria") String categoria);
+    
+    @Query("SELECT p FROM Produto p WHERE p.restaurante.id = :restauranteId AND (:disponivel IS NULL OR p.disponivel = :disponivel)")
+    List<Produto> findByRestauranteIdAndDisponivel(@Param("restauranteId") Long restauranteId, @Param("disponivel") Boolean disponivel);
 }

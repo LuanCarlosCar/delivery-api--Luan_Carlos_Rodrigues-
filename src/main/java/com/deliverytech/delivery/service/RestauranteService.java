@@ -1,7 +1,10 @@
 package com.deliverytech.delivery.service;
 
+import com.deliverytech.delivery.dto.ProdutoDTO;
 import com.deliverytech.delivery.dto.RestauranteDTO;
+import com.deliverytech.delivery.model.Produto;
 import com.deliverytech.delivery.model.Restaurante;
+import com.deliverytech.delivery.repository.ProdutoRepository;
 import com.deliverytech.delivery.repository.RestauranteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +23,9 @@ public class RestauranteService {
 
     @Autowired
     private RestauranteRepository restauranteRepository;
+
+    @Autowired
+    private ProdutoRepository produtoRepository;
 
     @Autowired
     private EntityManager entityManager;
@@ -63,6 +70,18 @@ public class RestauranteService {
         return new PageImpl<>(restaurantesDTO, pageable, total);
     }
 
+    public List<ProdutoDTO> findProdutosByRestaurante(Long restauranteId, Boolean disponivel) {
+        Optional<Restaurante> restaurante = restauranteRepository.findById(restauranteId);
+        if (restaurante.isEmpty()) {
+            throw new RuntimeException("Restaurante não encontrado");
+        }
+
+        List<Produto> produtos = produtoRepository.findByRestauranteIdAndDisponivel(restauranteId, disponivel);
+        return produtos.stream()
+            .map(this::convertProdutoToDTO)
+            .collect(Collectors.toList());
+    }
+
     private RestauranteDTO convertToDTO(Restaurante restaurante) {
         return new RestauranteDTO(
             restaurante.getId(),
@@ -74,6 +93,19 @@ public class RestauranteService {
             restaurante.getTempoEntregaMin(),
             restaurante.getAtivo(),
             restaurante.getDataCadastro()
+        );
+    }
+
+    private ProdutoDTO convertProdutoToDTO(Produto produto) {
+        return new ProdutoDTO(
+            produto.getId(),
+            produto.getNome(),
+            produto.getDescricao(),
+            produto.getPreco(),
+            produto.getCategoria(),
+            produto.getDisponivel(),
+            produto.getRestaurante().getId(),
+            produto.getRestaurante().getNome()
         );
     }
 }

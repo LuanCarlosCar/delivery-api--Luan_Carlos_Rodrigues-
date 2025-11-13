@@ -1,5 +1,6 @@
 package com.deliverytech.delivery.controller;
 
+import com.deliverytech.delivery.dto.ProdutoDTO;
 import com.deliverytech.delivery.dto.RestauranteDTO;
 import com.deliverytech.delivery.service.RestauranteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -27,5 +30,14 @@ public class RestauranteController {
         Page<RestauranteDTO> restaurantes = restauranteService.findRestaurantes(categoria, ativo, pageable);
         
         return ResponseEntity.ok(restaurantes);
+    }
+
+    @GetMapping("/restaurantes/{id}/produtos")
+    public ResponseEntity<List<ProdutoDTO>> getProdutosByRestaurante(
+            @PathVariable Long id,
+            @RequestParam(required = false) Boolean disponivel) {
+        
+        List<ProdutoDTO> produtos = restauranteService.findProdutosByRestaurante(id, disponivel);
+        return ResponseEntity.ok(produtos);
     }
 }
