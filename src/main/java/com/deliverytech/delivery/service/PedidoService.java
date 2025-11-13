@@ -2,12 +2,16 @@ package com.deliverytech.delivery.service;
 
 import com.deliverytech.delivery.dto.*;
 import com.deliverytech.delivery.model.*;
+import com.deliverytech.delivery.projection.VendasRestauranteReportProjection;
 import com.deliverytech.delivery.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -111,5 +115,12 @@ public class PedidoService {
             item.getPrecoUnitario(),
             item.getSubtotal()
         );
+    }
+
+    public List<VendasRestauranteReportProjection> relatorioVendasPorRestaurante(LocalDate dataInicio, LocalDate dataFim) {
+        LocalDateTime inicio = dataInicio.atStartOfDay();
+        LocalDateTime fim = dataFim.atTime(LocalTime.MAX);
+        
+        return pedidoRepository.findVendasPorRestaurante(inicio, fim);
     }
 }

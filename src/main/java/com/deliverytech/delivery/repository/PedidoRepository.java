@@ -4,6 +4,7 @@ import com.deliverytech.delivery.model.Pedido;
 import com.deliverytech.delivery.model.StatusPedido;
 import com.deliverytech.delivery.projection.PedidoReportProjection;
 import com.deliverytech.delivery.projection.VendasReportProjection;
+import com.deliverytech.delivery.projection.VendasRestauranteReportProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -52,4 +53,13 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
            "GROUP BY DATE(p.dataPedido) " +
            "ORDER BY DATE(p.dataPedido) DESC")
     List<VendasReportProjection> findRelatorioVendasPorPeriodo(@Param("dataInicio") LocalDateTime dataInicio);
+    
+    @Query("SELECT r.id as restauranteId, r.nome as restauranteNome, r.categoria as restauranteCategoria, " +
+           "COUNT(p.id) as totalPedidos, SUM(p.valorTotal) as receitaTotal, AVG(p.valorTotal) as ticketMedio " +
+           "FROM Pedido p JOIN p.restaurante r " +
+           "WHERE p.dataPedido BETWEEN :dataInicio AND :dataFim " +
+           "GROUP BY r.id, r.nome, r.categoria " +
+           "ORDER BY SUM(p.valorTotal) DESC")
+    List<VendasRestauranteReportProjection> findVendasPorRestaurante(@Param("dataInicio") LocalDateTime dataInicio, 
+                                                                      @Param("dataFim") LocalDateTime dataFim);
 }
