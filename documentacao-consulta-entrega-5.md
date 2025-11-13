@@ -100,3 +100,81 @@ A resposta é um objeto paginado com as seguintes propriedades:
     "empty": false
 }
 ```
+
+## Endpoint de Produtos por Restaurante
+
+### Endpoint
+
+```
+GET /api/restaurantes/{id}/produtos
+```
+
+### Parâmetros
+
+| Parâmetro | Tipo | Obrigatório | Descrição | Exemplo |
+|-----------|------|-------------|-----------|---------|
+| `id` | Long | Sim | ID do restaurante | `1` |
+| `disponivel` | Boolean | Não | Filtro por disponibilidade do produto | `true` |
+
+### Como Usar
+
+#### URL de Exemplo
+```
+http://localhost:8080/api/restaurantes/1/produtos?disponivel=true
+```
+
+#### Exemplos de Uso
+
+1. **Buscar todos os produtos de um restaurante**
+   ```
+   GET /api/restaurantes/1/produtos
+   ```
+
+2. **Filtrar apenas produtos disponíveis**
+   ```
+   GET /api/restaurantes/1/produtos?disponivel=true
+   ```
+
+3. **Filtrar produtos indisponíveis**
+   ```
+   GET /api/restaurantes/1/produtos?disponivel=false
+   ```
+
+### Resposta
+
+A resposta é um array de produtos:
+
+```json
+[
+    {
+        "id": 1,
+        "nome": "Pizza Margherita",
+        "descricao": "Pizza tradicional com molho de tomate, mussarela e manjericão",
+        "preco": 35.90,
+        "categoria": "Pizza",
+        "disponivel": true,
+        "restauranteId": 1,
+        "restauranteNome": "Pizza Express"
+    },
+    {
+        "id": 2,
+        "nome": "Pizza Pepperoni",
+        "descricao": "Pizza com molho de tomate, mussarela e pepperoni",
+        "preco": 42.90,
+        "categoria": "Pizza",
+        "disponivel": true,
+        "restauranteId": 1,
+        "restauranteNome": "Pizza Express"
+    },
+    {
+        "id": 3,
+        "nome": "Refrigerante 350ml",
+        "descricao": "Coca-Cola 350ml",
+        "preco": 4.50,
+        "categoria": "Bebida",
+        "disponivel": true,
+        "restauranteId": 1,
+        "restauranteNome": "Pizza Express"
+    }
+]
+```
