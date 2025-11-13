@@ -266,4 +266,63 @@ POST http://localhost:8080/api/pedidos
         }
     ]
 }
+
+## Endpoint de Relatório de Vendas por Restaurante
+
+### Endpoint
+
 ```
+GET /api/relatorios/vendas-por-restaurante
+```
+
+### Parâmetros de Query
+
+| Parâmetro | Tipo | Obrigatório | Descrição | Exemplo |
+|-----------|------|-------------|-----------|---------|
+| `dataInicio` | Date | Sim | Data inicial do período (formato: YYYY-MM-DD) | `2024-01-01` |
+| `dataFim` | Date | Sim | Data final do período (formato: YYYY-MM-DD) | `2024-01-31` |
+
+### Como Usar
+
+#### URL de Exemplo
+```
+http://localhost:8080/api/relatorios/vendas-por-restaurante?dataInicio=2024-01-01&dataFim=2024-01-31
+```
+
+#### Exemplo de Uso
+
+```
+GET /api/relatorios/vendas-por-restaurante?dataInicio=2024-01-01&dataFim=2024-01-31
+```
+
+### Resposta
+
+A resposta é um array de objetos com as vendas por restaurante:
+
+```json
+[
+    {
+        "restauranteId": 1,
+        "receitaTotal": 324.20,
+        "restauranteNome": "Pizza Express",
+        "ticketMedio": 81.05,
+        "totalPedidos": 4,
+        "restauranteCategoria": "Italiana"
+    },
+    {
+        "restauranteId": 3,
+        "receitaTotal": 110.70,
+        "restauranteNome": "Sushi Zen",
+        "ticketMedio": 55.35,
+        "totalPedidos": 2,
+        "restauranteCategoria": "Japonesa"
+    },
+    {
+        "restauranteId": 2,
+        "receitaTotal": 90.50,
+        "restauranteNome": "Burger House",
+        "ticketMedio": 45.25,
+        "totalPedidos": 2,
+        "restauranteCategoria": "Americana"
+    }
+]
