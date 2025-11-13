@@ -178,3 +178,92 @@ A resposta é um array de produtos:
     }
 ]
 ```
+
+### Propriedades da Resposta
+
+- `id`: Identificador único do produto
+- `nome`: Nome do produto
+- `descricao`: Descrição detalhada do produto
+- `preco`: Preço em formato decimal
+- `categoria`: Categoria do produto
+- `disponivel`: Status de disponibilidade (true/false)
+- `restauranteId`: ID do restaurante proprietário
+- `restauranteNome`: Nome do restaurante proprietário
+
+## Endpoint de Criação de Pedidos
+
+### Endpoint
+
+```
+POST /api/pedidos
+```
+
+### Corpo da Requisição
+
+```json
+{
+  "clienteId": 1,
+  "restauranteId": 1,
+  "enderecoEntrega": "Rua A, 123",
+  "itens": [
+    {"produtoId": 1, "quantidade": 2},
+    {"produtoId": 2, "quantidade": 1}
+  ]
+}
+```
+
+### Propriedades da Requisição
+
+| Campo | Tipo | Obrigatório | Descrição |
+|-------|------|-------------|-----------|
+| `clienteId` | Long | Sim | ID do cliente |
+| `restauranteId` | Long | Sim | ID do restaurante |
+| `enderecoEntrega` | String | Sim | Endereço de entrega |
+| `observacoes` | String | Não | Observações do pedido |
+| `itens` | Array | Sim | Lista de itens do pedido |
+| `itens[].produtoId` | Long | Sim | ID do produto |
+| `itens[].quantidade` | Integer | Sim | Quantidade do produto |
+
+### Como Usar
+
+#### URL de Exemplo
+```
+POST http://localhost:8080/api/pedidos
+```
+
+### Resposta
+
+**Status:** 201 Created
+
+```json
+{
+    "id": 3,
+    "clienteId": 1,
+    "clienteNome": "João Silva",
+    "restauranteId": 1,
+    "restauranteNome": "Pizza Express",
+    "status": "PENDENTE",
+    "dataPedido": "2025-11-13T20:09:36.1108814",
+    "valorTotal": 114.70,
+    "enderecoEntrega": "Rua A, 123",
+    "observacoes": null,
+    "itens": [
+        {
+            "id": 6,
+            "produtoId": 1,
+            "produtoNome": "Pizza Margherita",
+            "quantidade": 2,
+            "precoUnitario": 35.90,
+            "subtotal": 71.80
+        },
+        {
+            "id": 7,
+            "produtoId": 2,
+            "produtoNome": "Pizza Pepperoni",
+            "quantidade": 1,
+            "precoUnitario": 42.90,
+            "subtotal": 42.90
+        }
+    ]
+}
+```
