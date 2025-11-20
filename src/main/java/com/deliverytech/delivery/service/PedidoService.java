@@ -4,6 +4,7 @@ import com.deliverytech.delivery.dto.*;
 import com.deliverytech.delivery.model.*;
 import com.deliverytech.delivery.projection.VendasRestauranteReportProjection;
 import com.deliverytech.delivery.repository.*;
+import com.deliverytech.delivery.security.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,5 +123,36 @@ public class PedidoService {
         LocalDateTime fim = dataFim.atTime(LocalTime.MAX);
         
         return pedidoRepository.findVendasPorRestaurante(inicio, fim);
+    }
+
+    public List<PedidoResponseDTO> listarTodosPedidos() {
+        List<Pedido> pedidos = pedidoRepository.findAll();
+        return pedidos.stream()
+            .map(this::convertToResponseDTO)
+            .collect(Collectors.toList());
+    }
+
+    public List<PedidoResponseDTO> listarPedidosDoCliente() {
+        Long clienteId = SecurityUtils.getCurrentUserId();
+        List<Pedido> pedidos = pedidoRepository.findByClienteId(clienteId);
+        return pedidos.stream()
+            .map(this::convertToResponseDTO)
+            .collect(Collectors.toList());
+    }
+
+    public List<PedidoResponseDTO> listarPedidosDoRestaurante() {
+        Long restauranteId = SecurityUtils.getCurrentUserRestauranteId();
+        if (restauranteId == null) {
+            throw new RuntimeException("Usuário não está associado a um restaurante");
+        }
+        List<Pedido> pedidos = pedidoRepository.findByRestauranteId(restauranteId);
+        return pedidos.stream()
+            .map(this::convertToResponseDTO)
+            .collect(Collectors.toList());
+    }
+
+    private PedidoResponseDTO convertToResponseDTO(Pedido pedido) {
+        List<ItemPedido> itens = itemPedidoRepository.findByPedidoId(pedido.getId());
+        return convertToResponseDTO(pedido, itens);
     }
 }

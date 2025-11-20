@@ -1,5 +1,16 @@
 -- Inserir dados de teste para relatórios
 
+-- Usuários (senha para todos: "123456")
+INSERT INTO usuario (id, nome, email, senha, role, ativo, data_criacao, restaurante_id) VALUES
+(1, 'Admin Sistema', 'admin@delivery.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iKXulpZR8J4OY6Nd4EMCFyZw4ufC', 'ADMIN', true, '2024-01-01 08:00:00', null),
+(2, 'João Cliente', 'joao@email.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iKXulpZR8J4OY6Nd4EMCFyZw4ufC', 'CLIENTE', true, '2024-01-01 08:30:00', null),
+(3, 'Maria Cliente', 'maria@email.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iKXulpZR8J4OY6Nd4EMCFyZw4ufC', 'CLIENTE', true, '2024-01-02 09:00:00', null),
+(4, 'Pedro Cliente', 'pedro@email.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iKXulpZR8J4OY6Nd4EMCFyZw4ufC', 'CLIENTE', true, '2024-01-03 09:30:00', null),
+(5, 'Pizza Palace', 'pizza@palace.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iKXulpZR8J4OY6Nd4EMCFyZw4ufC', 'RESTAURANTE', true, '2024-01-01 10:00:00', 1),
+(6, 'Burger House Owner', 'burger@house.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iKXulpZR8J4OY6Nd4EMCFyZw4ufC', 'RESTAURANTE', true, '2024-01-01 10:30:00', 2),
+(7, 'Sushi Zen Owner', 'sushi@zen.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iKXulpZR8J4OY6Nd4EMCFyZw4ufC', 'RESTAURANTE', true, '2024-01-01 11:00:00', 3),
+(8, 'Carlos Entregador', 'carlos@entrega.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iKXulpZR8J4OY6Nd4EMCFyZw4ufC', 'ENTREGADOR', true, '2024-01-01 11:30:00', null);
+
 -- Clientes
 INSERT INTO cliente (nome, email, telefone, endereco, ativo, data_cadastro) VALUES
 ('João Silva', 'joao@email.com', '11999999999', 'Rua A, 123', true, '2024-01-01 10:00:00'),

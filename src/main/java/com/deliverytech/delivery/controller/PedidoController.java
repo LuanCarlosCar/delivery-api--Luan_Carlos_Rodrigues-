@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -21,6 +22,7 @@ public class PedidoController {
     private PedidoService pedidoService;
 
     @PostMapping("/pedidos")
+    @PreAuthorize("hasRole('CLIENTE')")
     public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody PedidoRequestDTO request) {
         try {
             PedidoResponseDTO pedido = pedidoService.criarPedido(request);
@@ -31,12 +33,46 @@ public class PedidoController {
     }
 
     @GetMapping("/relatorios/vendas-por-restaurante")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<VendasRestauranteReportProjection>> relatorioVendasPorRestaurante(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dataFim) {
         try {
             List<VendasRestauranteReportProjection> relatorio = pedidoService.relatorioVendasPorRestaurante(dataInicio, dataFim);
             return ResponseEntity.ok(relatorio);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/pedidos")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<PedidoResponseDTO>> listarTodosPedidos() {
+        try {
+            List<PedidoResponseDTO> pedidos = pedidoService.listarTodosPedidos();
+            return ResponseEntity.ok(pedidos);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/pedidos/meus")
+    @PreAuthorize("hasRole('CLIENTE')")
+    public ResponseEntity<List<PedidoResponseDTO>> listarMeusPedidos() {
+        try {
+            List<PedidoResponseDTO> pedidos = pedidoService.listarPedidosDoCliente();
+            return ResponseEntity.ok(pedidos);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/pedidos/restaurante")
+    @PreAuthorize("hasRole('RESTAURANTE')")
+    public ResponseEntity<List<PedidoResponseDTO>> listarPedidosDoRestaurante() {
+        try {
+            List<PedidoResponseDTO> pedidos = pedidoService.listarPedidosDoRestaurante();
+            return ResponseEntity.ok(pedidos);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }
