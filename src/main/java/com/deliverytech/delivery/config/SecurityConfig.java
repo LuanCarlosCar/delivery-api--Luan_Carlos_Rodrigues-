@@ -1,6 +1,9 @@
 package com.deliverytech.delivery.config;
 
 import com.deliverytech.delivery.security.JwtAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -29,6 +32,8 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final UserDetailsService userDetailsService;
 
@@ -39,6 +44,15 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        logger.info("🔧 Configurando Security Filter Chain");
+        logger.info("📋 Endpoints públicos configurados:");
+        logger.info("   - POST /api/auth/**");
+        logger.info("   - GET /api/restaurantes/**");
+        logger.info("   - GET /api/produtos/**");
+        logger.info("   - /actuator/health");
+        logger.info("   - /swagger-ui/**, /swagger-ui.html, /v3/api-docs/**, /api-docs/**, /swagger-resources/**, /webjars/**");
+        logger.info("   - /h2-console/**");
+        
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -47,15 +61,25 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/restaurantes/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/produtos/**").permitAll()
-                        .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/debug/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/api-docs/**", "/swagger-resources/**", "/webjars/**", "/favicon.ico").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/error").permitAll()
                         // Todos os outros endpoints requerem autenticação
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            logger.warn("🚫 Authentication required for: {} - {}", request.getRequestURI(), authException.getMessage());
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Authentication required\",\"path\":\"" + request.getRequestURI() + "\"}");
+                        })
+                );
 
         // Permitir frames para H2 console
         http.headers(headers -> headers.frameOptions().disable());
