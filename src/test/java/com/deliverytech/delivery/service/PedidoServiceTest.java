@@ -210,19 +210,31 @@ class PedidoServiceTest {
         void deveCalcularValorTotalCorretamente() {
             when(clienteRepository.findById(1L)).thenReturn(Optional.of(cliente));
             when(restauranteRepository.findById(1L)).thenReturn(Optional.of(restaurante));
-            when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
+            
+            // Mock para retornar o próprio argumento quando save for chamado
+            when(pedidoRepository.save(any(Pedido.class))).thenAnswer(invocation -> {
+                Pedido pedidoArgumento = invocation.getArgument(0);
+                if (pedidoArgumento.getId() == null) {
+                    pedidoArgumento.setId(1L); // Simular que o banco gerou o ID
+                }
+                return pedidoArgumento;
+            });
+            
             when(produtoRepository.findById(1L)).thenReturn(Optional.of(produto));
             when(itemPedidoRepository.saveAll(any())).thenReturn(Arrays.asList());
 
-            pedidoService.criarPedido(pedidoRequest);
+            PedidoResponseDTO resultado = pedidoService.criarPedido(pedidoRequest);
 
-            verify(pedidoRepository, times(2)).save(argThat(pedidoCapturado -> {
-                if (pedidoCapturado.getValorTotal() != null) {
-                    BigDecimal valorEsperado = produto.getPreco().multiply(new BigDecimal(itemRequest.getQuantidade()));
-                    return pedidoCapturado.getValorTotal().equals(valorEsperado);
-                }
-                return true;
-            }));
+            // Verificar que save foi chamado duas vezes
+            verify(pedidoRepository, times(2)).save(any(Pedido.class));
+            
+            // Verificar que o resultado não é null e tem o valor total correto
+            assertNotNull(resultado);
+            BigDecimal valorEsperado = produto.getPreco().multiply(new BigDecimal(itemRequest.getQuantidade()));
+            assertEquals(valorEsperado, resultado.getValorTotal());
+            
+            verify(produtoRepository).findById(1L);
+            verify(itemPedidoRepository).saveAll(any());
         }
     }
 
