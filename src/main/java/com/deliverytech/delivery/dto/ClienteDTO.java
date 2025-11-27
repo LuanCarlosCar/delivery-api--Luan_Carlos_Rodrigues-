@@ -1,10 +1,16 @@
 package com.deliverytech.delivery.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 public class ClienteDTO {
     private Long id;
+    @NotBlank(message = "Nome é obrigatório")
     private String nome;
+    
+    @NotBlank(message = "Email é obrigatório")
+    @Email(message = "Email deve ter formato válido")
     private String email;
     private String telefone;
     private String endereco;

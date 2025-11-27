@@ -2,7 +2,7 @@ package com.deliverytech.delivery.controller;
 
 import com.deliverytech.delivery.dto.ClienteDTO;
 import com.deliverytech.delivery.model.Cliente;
-import com.deliverytech.delivery.model.Usuario;
+import com.deliverytech.delivery.entity.Usuario;
 import com.deliverytech.delivery.repository.ClienteRepository;
 import com.deliverytech.delivery.repository.UsuarioRepository;
 import com.deliverytech.delivery.security.JwtUtil;
@@ -61,22 +61,16 @@ class ClienteControllerIT {
         clienteRepository.deleteAll();
         usuarioRepository.deleteAll();
 
-        Usuario adminUser = new Usuario();
-        adminUser.setUsername("admin");
-        adminUser.setPassword(passwordEncoder.encode("admin123"));
-        adminUser.setRole(com.deliverytech.delivery.enums.Role.ADMIN);
-        adminUser.setEmail("admin@test.com");
+        Usuario adminUser = new Usuario("admin@test.com", passwordEncoder.encode("admin123"), 
+                                        "Admin User", com.deliverytech.delivery.enums.Role.ADMIN);
         adminUser = usuarioRepository.save(adminUser);
 
-        Usuario clienteUser = new Usuario();
-        clienteUser.setUsername("cliente");
-        clienteUser.setPassword(passwordEncoder.encode("cliente123"));
-        clienteUser.setRole(com.deliverytech.delivery.enums.Role.CLIENTE);
-        clienteUser.setEmail("cliente@test.com");
+        Usuario clienteUser = new Usuario("cliente@test.com", passwordEncoder.encode("cliente123"), 
+                                          "Cliente User", com.deliverytech.delivery.enums.Role.CLIENTE);
         clienteUser = usuarioRepository.save(clienteUser);
 
-        adminToken = "Bearer " + jwtUtil.generateToken(adminUser.getUsername());
-        clienteToken = "Bearer " + jwtUtil.generateToken(clienteUser.getUsername());
+        adminToken = "Bearer " + jwtUtil.generateToken(adminUser);
+        clienteToken = "Bearer " + jwtUtil.generateToken(clienteUser);
 
         clienteExistente = new Cliente("João Silva", "joao@email.com", "11999999999", "Rua das Flores, 123");
         clienteExistente = clienteRepository.save(clienteExistente);

@@ -3,6 +3,7 @@ package com.deliverytech.delivery.controller;
 import com.deliverytech.delivery.dto.ItemPedidoRequestDTO;
 import com.deliverytech.delivery.dto.PedidoRequestDTO;
 import com.deliverytech.delivery.model.*;
+import com.deliverytech.delivery.entity.Usuario;
 import com.deliverytech.delivery.repository.*;
 import com.deliverytech.delivery.security.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -78,37 +79,27 @@ class PedidoControllerIT {
         restauranteRepository.deleteAll();
         usuarioRepository.deleteAll();
 
-        Usuario adminUser = new Usuario();
-        adminUser.setUsername("admin");
-        adminUser.setPassword(passwordEncoder.encode("admin123"));
-        adminUser.setRole(com.deliverytech.delivery.enums.Role.ADMIN);
-        adminUser.setEmail("admin@test.com");
+        Usuario adminUser = new Usuario("admin@test.com", passwordEncoder.encode("admin123"), 
+                                        "Admin User", com.deliverytech.delivery.enums.Role.ADMIN);
         usuarioRepository.save(adminUser);
 
         cliente = new Cliente("João Silva", "joao@email.com", "11999999999", "Rua das Flores, 123");
         cliente = clienteRepository.save(cliente);
 
-        Usuario clienteUser = new Usuario();
-        clienteUser.setUsername("cliente");
-        clienteUser.setPassword(passwordEncoder.encode("cliente123"));
-        clienteUser.setRole(com.deliverytech.delivery.enums.Role.CLIENTE);
-        clienteUser.setEmail("cliente@test.com");
-        clienteUser.setClienteId(cliente.getId());
+        Usuario clienteUser = new Usuario("cliente@test.com", passwordEncoder.encode("cliente123"), 
+                                          "Cliente User", com.deliverytech.delivery.enums.Role.CLIENTE);
         usuarioRepository.save(clienteUser);
 
         restaurante = new Restaurante();
         restaurante.setNome("Restaurante Teste");
         restaurante.setTelefone("11888888888");
         restaurante.setEndereco("Rua do Restaurante, 456");
-        restaurante.setTipoCozinha("Brasileira");
+        restaurante.setCategoria("Brasileira");
         restaurante.setAtivo(true);
         restaurante = restauranteRepository.save(restaurante);
 
-        Usuario restauranteUser = new Usuario();
-        restauranteUser.setUsername("restaurante");
-        restauranteUser.setPassword(passwordEncoder.encode("restaurante123"));
-        restauranteUser.setRole(com.deliverytech.delivery.enums.Role.RESTAURANTE);
-        restauranteUser.setEmail("restaurante@test.com");
+        Usuario restauranteUser = new Usuario("restaurante@test.com", passwordEncoder.encode("restaurante123"), 
+                                              "Restaurante User", com.deliverytech.delivery.enums.Role.RESTAURANTE);
         restauranteUser.setRestauranteId(restaurante.getId());
         usuarioRepository.save(restauranteUser);
 
@@ -120,9 +111,9 @@ class PedidoControllerIT {
         produto.setRestaurante(restaurante);
         produto = produtoRepository.save(produto);
 
-        adminToken = "Bearer " + jwtUtil.generateToken(adminUser.getUsername());
-        clienteToken = "Bearer " + jwtUtil.generateToken(clienteUser.getUsername());
-        restauranteToken = "Bearer " + jwtUtil.generateToken(restauranteUser.getUsername());
+        adminToken = "Bearer " + jwtUtil.generateToken(adminUser);
+        clienteToken = "Bearer " + jwtUtil.generateToken(clienteUser);
+        restauranteToken = "Bearer " + jwtUtil.generateToken(restauranteUser);
     }
 
     @Nested
